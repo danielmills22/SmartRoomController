@@ -17,9 +17,9 @@
 Encoder myEnc(3, 2);       //pins the encoder is connected to
 int encoderOutput;         //var to hold encoder output
 int encoderLastPosition;   //var to hold last encoder position
-const int SWITCHBUTTON = 23;  //pin the Switch button is connected to
-const int GREENBUTTON = 22;
-const int REDBUTTON = 21;
+//const int SWITCHBUTTON = 23;  //pin the Switch button is connected to
+//const int GREENBUTTON = 22;
+//const int REDBUTTON = 21;
 bool ONOFF;               //bool to turn on and off the hue
 
 
@@ -60,34 +60,9 @@ void loop() {
       if (encoderOutput < 1) {                 //<fuct that makes sure there are no negative values (no lights selected
         myEnc.write(1);                        //writes the value back to the first lightbulb
       }
-   }
-   
-  ONOFF = digitalRead(SWITCHBUTTON);
-  if (ONOFF == true) {
-    Serial.printf(" %i ", ONOFF);
-    setHue(3,true,HueBlue,255,255);
-  }  
-  else{  
-    setHue(3,true,HueRed,255,255);
   }
-
-  
-
-  //  encoderOutput = myEnc.read();     //reads from the encoder
-  //  if (encoderOutput != encoderLastPosition) {   //compares the current encoder position to the the previous 
-  //    Serial.println(encoderOutput);   //prints the encoder value to the serial monitor
-  //  } 
-  //  encoderLastPosition = encoderOutput;
-  
-  
-  setHue(3,true,HueBlue,255,255);   //(5)is the lightbulb #, value used to set hue
+  setHue(3,true,HueBlue,encoderLastPosition,255);   //(5)is the lightbulb #, value used to set hue
   delay(300);   //pause 
-  
-  
-  //setHue(3,true,HueYellow,50,255);  //outputs the second color
-  //delay(300);   //pause
-
-  }
 }
 
 //#Start of the printIP function
