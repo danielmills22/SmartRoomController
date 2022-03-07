@@ -7,7 +7,7 @@
  */
 
 #include button
-#include keypad
+#include keypad  //skip this one for now
 #include OLED
 #include WEMO
 #include Ethernet
