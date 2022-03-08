@@ -20,6 +20,8 @@
 #include <colors.h>                    //includes the colors library
 #include <Encoder.h>                   //includes the library for the encoder
 #include <SD.h>                        //includes the SD card library
+#include "wemo.h"                      //includes the wemo library
+#include <Adafruit_NeoPixel.h>         //includes the NeoPixel library
 
 //Image Header Files
 #include "kittyHeader.h"               //Includes the kitty image        
@@ -50,10 +52,20 @@ int iButton = 0;                //Creates var to hold the button press outcome
 //Creates the SD card object
 File dataFile;
 //Creates the vars for the SD Card
-const int chipSelect = 4;
-int object;
+const int chipSelect = 4;     //Registers the SD card to pin 4
+int object;                   //Creates an int var for saving data from the SD Card
 bool status;
 
+//Wemo Vars
+int wemoPorts = 0;  //starts the wemo ports on zero
+byte thisbyte; //used to get IP address
+int i;
+
+//NeoPixel Var
+const int PIXELPIN = 17;
+const int PIXELCOUNT = 16;
+
+Adafruit_NeoPixel pixel(PIXELCOUNT,PIXELPIN, NEO_GRB + NEO_KHZ800);  //declares the NeoPixel Object
 
 void setup() {
 //##SetUp block for OneButton
@@ -104,6 +116,19 @@ Serial.printf("Initializing SD card...");
     Serial.printf("card initialized.\n");
   }
 
+//##Set Up block for Wemo Ports - Print your local IP address
+  Serial.print("My IP address: ");                   //Lets user know that the ip is being printed to the screen
+  for (thisbyte = 0; thisbyte < 3; thisbyte++) {     //Start of loop for identifing the IP
+    //print value of each byte of the IP address
+    Serial.printf("%i.",Ethernet.localIP()[thisbyte]);      //Command for printing the Ethernet local IP
+    }
+  Serial.printf("%i\n",Ethernet.localIP()[thisbyte]);        //Prints the Final ethernet local ip to the monitor
+  switchOFF(0);                                              //Turns off the wemo port 0
+
+//Setup Block for NeoPixels
+ pixel.setBrightness(150);    //sets the brightness of the NeoPixels to 150
+ pixel.begin();               //Sets the Neopixel and starts listening for commands
+
 }
 
 void loop() {
@@ -133,6 +158,10 @@ Serial.printf("Daniel turned on \n");  //output to let me know that the card sta
   writeToSD(object);  //writes object data(currently 0) to the SD Card
   delay(2000);        //Pauses for 2 seconds after the information is written to card
   readFromSD();       //Reads the object information from the SD Card
+
+//Loop for showing the NeoPixel 
+  pixel.fill(blue, i, 16);
+  pixel.show();
 }
 
 //Creates the void functions for OneButton
@@ -196,4 +225,27 @@ void readFromSD(){                                    //start of loop needed to 
     Serial.printf("error opening datalog.csv \n");     //Prints error to the monitor
   }
   return;                                              //Ends the loop
+}
+
+//##Void Funtion Blocks for Controlling the Wemo Ports
+void clickWemo() {                                     //when input is received (button is pressed)..
+    buttonState = !buttonState;                     //when button is pressed it changes the bool value of the buttonState
+    Serial.printf("Single button press %i \n", buttonState);        //can do the same thing as  different data types on the same line 
+    if (buttonState) {                                        //asks if the button state is true
+      switchON(wemoPorts);                                    //turns on the wemo pors
+      Serial.printf("Single button press \n");                //Registers that the wemo button was pressed
+    }  
+    else{                                                    //What to look for if this is not true
+      switchOFF(wemoPorts);                                 //Turns off the wemo ports
+    }                         
+} 
+//##Void Function for changing the wemo ports with the DoubleClick One Button action 
+void doubleClickWemo() {                          //looks for what to do if a doubleclick is register
+  blinker = !blinker;                         //Blinker is var used for storing double click information 
+  if (blinker, wemoPorts = i, i++) {         //If  blinker is false, set wemoPorts=i, and incriments I (switches the active wemo port)
+    wemoPorts = i;                           //Sets the current wemo port = to the current i value
+  } 
+  else {                                     //If this is not true
+    wemoPorts = 0;                           //sets the wemoPorts=0
+  }
 }
