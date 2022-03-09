@@ -178,8 +178,8 @@ void loop() {
  //Serial.printf("Potent Map %i \n, Potent Values %i \n", potentMap, potentValue);
  Serial.printf("Potent Map %i \n", potentMap);
   //sp
-  if(potentMap != lastPotentValue)  //Start of Switch loop
-  {
+//  if(potentMap != lastPotentValue)  //Start of Switch loop
+//  {
     // enter switch case
     switch(potentMap)
     {
@@ -189,15 +189,16 @@ void loop() {
          display.display();
          
          if (buttonState) {
-            //currentNeoPixel = map(encoderOutput,0,96,0,15);
-            //pixel.setPixelColor(currentNeoPixel,yellow);
-            pixel.fill(blue, i, 16);
+            currentNeoPixel = map(encoderOutput,0,96,0,15);
+            pixel.setPixelColor(currentNeoPixel,yellow);
+            //pixel.fill(blue, i, 16);
             pixel.show();
             Serial.printf("Case 0 Button Check %i \n", buttonState); 
          }
          else {
-          Serial.printf("Case 0 Button Check Else Stat %i \n", buttonState);
-          pixel.clear(); 
+            Serial.printf("Case 0 Button Check Else Stat %i \n", buttonState);
+            pixel.clear(); 
+            pixel.show();
          }
         break;
       case 1:
@@ -269,7 +270,7 @@ void loop() {
           
           Serial.println("error!");
         break;
-    }
+    //}
     lastPotentValue = potentMap;
   }
 }
