@@ -46,7 +46,8 @@ bool ONOFF;               //bool to turn on and off the hue
 
 //OneButton Vars
 OneButton button1(20, false);   //OneButton to pin 23 and sets value to false
-bool buttonState, blinker;      //Creates a bool var for buttonState and for blinker
+bool buttonState = 0; 
+bool blinker = 0;      //Creates a bool var for buttonState and for blinker
 int iButton = 0;                //Creates var to hold the button press outcome
 
 //Creates the SD card object
@@ -64,6 +65,14 @@ int i;
 //NeoPixel Var
 const int PIXELPIN = 17;
 const int PIXELCOUNT = 16;
+int currentNeoPixel;
+
+//Vars for BME - Temp Sensor 
+int temp;
+int humid;
+
+//Journey Var
+char name;
 
 Adafruit_NeoPixel pixel(PIXELCOUNT,PIXELPIN, NEO_GRB + NEO_KHZ800);  //declares the NeoPixel Object
  
@@ -101,8 +110,8 @@ void setup() {
   display.display();         //Only use this command when needed instead of repeating
   delay(100);
 
-//  drawbitmap();             //draws the map
-// delay(2000);
+  //  drawbitmap();             //draws the map
+  // delay(2000);
 
   //##Setup Block for the SD Card
   Serial.printf("Initializing SD card...");
@@ -137,23 +146,37 @@ void setup() {
   //Sets the pinMode for the potent values
   pinMode(potentPin, INPUT);   // set pin modes
   Serial.begin(9600);  //listen to Serial monitor
+
+  //NeoPixel Setup Block
+  pixel.setBrightness(150);  //brightness value for the Neopixels display
+  pixel.begin();
+  pixel.show();
 }
 
-//Vars to check for button click
-bool buttonCase0;
-bool buttonCase1;
-bool buttonCase2;
-bool buttonCase3;
-bool buttonCase4;
+
 
 //////////////////////////////
 /////////////////////////////
 void loop() {
+  
   button1.tick();
- 
+  Serial.printf("Button State %i \n", buttonState); 
+  encoderOutput = myEnc.read();
+  if (encoderOutput != encoderLastPosition) {
+    Serial.println(encoderOutput);
+    encoderLastPosition = encoderOutput;
+      if (encoderOutput > 96) {
+        myEnc.write(96);
+      }
+      if (encoderOutput < 0) {
+        myEnc.write(0);
+      }
+  }
+  
  int potentValue = analogRead(potentPin);   // read potentPin and divide by 255 to give 5 possible readings
  potentMap = map(potentValue, 0, 1023, 0, 4);
- Serial.printf("Potent Map %i \n, Potent Values %i \n", potentMap, potentValue);
+ //Serial.printf("Potent Map %i \n, Potent Values %i \n", potentMap, potentValue);
+ Serial.printf("Potent Map %i \n", potentMap);
   //sp
   if(potentMap != lastPotentValue)  //Start of Switch loop
   {
@@ -161,21 +184,25 @@ void loop() {
     switch(potentMap)
     {
       case 0:
-          //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          display.setTextColor(SSD1306_WHITE);
-          display.setCursor(0,0);             // Start at top-left corner
-          display.printf("What would you like to do: Case 0 \n Case 1 \n Case 2 \n Case 3 \n Case 4 \n");   //Outputs Switch Case
-
-          display.display();
-          //delay(2000);                //delays the clear display for 2 seconds
-
-          display.clearDisplay();      //clears the display 
-          Serial.printf("Button Click State %i", click1);
-          
-          
+         display.clearDisplay(); 
+         display.printf("Switch Case 0 - Light Neopixels");
+         display.display();
+         
+         if (buttonState) {
+            //currentNeoPixel = map(encoderOutput,0,96,0,15);
+            //pixel.setPixelColor(currentNeoPixel,yellow);
+            pixel.fill(blue, i, 16);
+            pixel.show();
+            Serial.printf("Case 0 Button Check %i \n", buttonState); 
+         }
+         else {
+          Serial.printf("Case 0 Button Check Else Stat %i \n", buttonState);
+          pixel.clear(); 
+         }
         break;
       case 1:
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
+          display.clearDisplay();      //clears the display 
           display.setTextColor(SSD1306_WHITE);
           display.setCursor(0,0);             // Start at top-left corner
           display.printf("Switch Case 1");   //Outputs Switch Case
@@ -183,12 +210,13 @@ void loop() {
           display.display();
           //delay(2000);                //delays the clear display for 2 seconds
 
-          display.clearDisplay();      //clears the display 
+          
           Serial.println("Switch Case 1");
         break;
      //Start of case 2
       case 2:
         //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
+          display.clearDisplay();      //clears the display 
           display.setTextColor(SSD1306_WHITE);
           display.setCursor(0,0);             // Start at top-left corner
           display.printf("Switch Case 2");   //Outputs Switch Case
@@ -196,12 +224,13 @@ void loop() {
           display.display();
           //delay(2000);                //delays the clear display for 2 seconds
 
-          display.clearDisplay();      //clears the display 
+          
           Serial.println("Switch Case 2");
         break;
       //Start of case 3
       case 3:
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
+          display.clearDisplay();      //clears the display 
           display.setTextColor(SSD1306_WHITE);
           display.setCursor(0,0);             // Start at top-left corner
           display.printf("Switch Case 3");   //Outputs Switch Case
@@ -209,12 +238,13 @@ void loop() {
           display.display();
           //delay(2000);                //delays the clear display for 2 seconds
 
-          display.clearDisplay();      //clears the display 
+          
           Serial.println("Switch Case 3");
         break;
       //Start of Case 4
       case 4:
          //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
+          display.clearDisplay();      //clears the display 
           display.setTextColor(SSD1306_WHITE);
           display.setCursor(0,0);             // Start at top-left corner
           display.printf("Switch Case 4");   //Outputs Switch Case
@@ -222,12 +252,13 @@ void loop() {
           display.display();
           //delay(2000);                //delays the clear display for 2 seconds
 
-          display.clearDisplay();      //clears the display 
+          
           Serial.println("Switch Case 4");
         break;
       //Start of default
       default:
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
+          display.clearDisplay();      //clears the display 
           display.setTextColor(SSD1306_WHITE);
           display.setCursor(0,0);             // Start at top-left corner
           display.printf("Error");   //Outputs Switch Case
@@ -235,7 +266,7 @@ void loop() {
           display.display();
           delay(2000);                //delays the clear display for 2 seconds
 
-          display.clearDisplay();      //clears the display 
+          
           Serial.println("error!");
         break;
     }
@@ -290,7 +321,7 @@ void writeToSD(int object) {                             //Start of function use
   dataFile = SD.open("datalog.csv", FILE_WRITE);         //Opens the datalog.csv for writing to file
   // if the file is available, write to it:
   if (dataFile) {                                       //asks if data file is available 
-    dataFile.printf("%i, \n", object);                  //Writes the data to the card 
+    dataFile.printf("%i, %i \n", object);                  //Writes the data to the card 
     dataFile.close();                                   //Closes the data file after the information is written to it
     Serial.printf("%i, %i \n", object);                 //prints the information stored in the data file to the serial monitor                
   }  
