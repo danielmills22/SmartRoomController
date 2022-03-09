@@ -24,7 +24,7 @@
 #include <Adafruit_NeoPixel.h>         //includes the NeoPixel library
 
 //Image Header Files
-//#include "kittyHeader.h"               //Includes the kitty image        
+#include "kittyHeader.h"               //Includes the kitty image        
 
 //Var for OLED Screen
 const int SCREEN_WIDTH = 128;         //sets the screen width for the OLED
@@ -70,6 +70,7 @@ Adafruit_NeoPixel pixel(PIXELCOUNT,PIXELPIN, NEO_GRB + NEO_KHZ800);  //declares 
 //Ints for potent
 int potentPin = 14;  //set potent to port 14
 int lastPotentValue;  //creates int for last potent value
+int potentMap;
 
 void setup() {
   //##SetUp block for OneButton
@@ -114,7 +115,7 @@ void setup() {
   status = SD.begin(chipSelect);
   if (!status) {  // if status is false
     Serial.printf("Card failed, or not present\n");
-    while(true);  // pause the code indefinately
+//    while(true);  // pause the code indefinately
   }
   else {
     Serial.printf("card initialized.\n");
@@ -150,12 +151,14 @@ bool buttonCase4;
 void loop() {
   button1.tick();
  
- int potentValue = analogRead(potentPin) / 255;   // read potentPin and divide by 255 to give 5 possible readings
+ int potentValue = analogRead(potentPin);   // read potentPin and divide by 255 to give 5 possible readings
+ potentMap = map(potentValue, 0, 1023, 0, 4);
+ Serial.printf("Potent Map %i \n, Potent Values %i \n", potentMap, potentValue);
   //sp
-  if(potentValue != lastPotentValue)  //Start of Switch loop
+  if(potentMap != lastPotentValue)  //Start of Switch loop
   {
     // enter switch case
-    switch(potentValue)
+    switch(potentMap)
     {
       case 0:
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
@@ -164,10 +167,9 @@ void loop() {
           display.printf("What would you like to do: Case 0 \n Case 1 \n Case 2 \n Case 3 \n Case 4 \n");   //Outputs Switch Case
 
           display.display();
-          delay(2000);                //delays the clear display for 2 seconds
+          //delay(2000);                //delays the clear display for 2 seconds
 
           display.clearDisplay();      //clears the display 
-          click1();
           Serial.printf("Button Click State %i", click1);
           
           
@@ -179,7 +181,7 @@ void loop() {
           display.printf("Switch Case 1");   //Outputs Switch Case
 
           display.display();
-          delay(2000);                //delays the clear display for 2 seconds
+          //delay(2000);                //delays the clear display for 2 seconds
 
           display.clearDisplay();      //clears the display 
           Serial.println("Switch Case 1");
@@ -192,7 +194,7 @@ void loop() {
           display.printf("Switch Case 2");   //Outputs Switch Case
 
           display.display();
-          delay(2000);                //delays the clear display for 2 seconds
+          //delay(2000);                //delays the clear display for 2 seconds
 
           display.clearDisplay();      //clears the display 
           Serial.println("Switch Case 2");
@@ -205,7 +207,7 @@ void loop() {
           display.printf("Switch Case 3");   //Outputs Switch Case
 
           display.display();
-          delay(2000);                //delays the clear display for 2 seconds
+          //delay(2000);                //delays the clear display for 2 seconds
 
           display.clearDisplay();      //clears the display 
           Serial.println("Switch Case 3");
@@ -218,7 +220,7 @@ void loop() {
           display.printf("Switch Case 4");   //Outputs Switch Case
 
           display.display();
-          delay(2000);                //delays the clear display for 2 seconds
+          //delay(2000);                //delays the clear display for 2 seconds
 
           display.clearDisplay();      //clears the display 
           Serial.println("Switch Case 4");
@@ -237,7 +239,7 @@ void loop() {
           Serial.println("error!");
         break;
     }
-    lastPotentValue = potentValue;
+    lastPotentValue = potentMap;
   }
 }
 
