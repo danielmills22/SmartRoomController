@@ -152,6 +152,8 @@ void setup() {
   pinMode(potentPin, INPUT);   // set pin modes
   Serial.begin(9600);  //listen to Serial monitor
 
+  status = bme.begin(0x76); //looks for the temp sensor
+
   //NeoPixel Setup Block
   pixel.setBrightness(150);  //brightness value for the Neopixels display
   pixel.begin();
@@ -183,18 +185,20 @@ void loop() {
  //Serial.printf("Potent Map %i \n, Potent Values %i \n", potentMap, potentValue);
  Serial.printf("Potent Map %i \n", potentMap);
   //sp
-//  if(potentMap != lastPotentValue)  //Start of Switch loop
-//  {
+  if(potentMap != lastPotentValue){  //Start of Switch loop
+    buttonState = false;
+    blinker = false;
+    lastPotentValue = potentMap;
+  }
     // enter switch case
     switch(potentMap)
     {
       case 0:
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          
-          display.setTextColor(SSD1306_WHITE);
-          display.setCursor(0,0);             // Start at top-left corner
-          display.printf("Switch Case 0");   //Outputs Switch Case
-          display.display();
+          //display.setTextColor(SSD1306_WHITE);
+          //display.setCursor(0,0);             // Start at top-left corner
+          //display.printf("Switch Case 0");   //Outputs Switch Case
+          //display.display();
          
          
          if (buttonState) {
@@ -238,6 +242,7 @@ void loop() {
               encoderOutput = myEnc.read();
               if (encoderOutput != encoderLastPosition) {
                 Serial.println(encoderOutput);
+                buttonState = false;
                 encoderLastPosition = encoderOutput;
                   if (encoderOutput > 4) {
                     myEnc.write(4);
@@ -327,6 +332,7 @@ void loop() {
           //delay(2000);                //delays the clear display for 2 seconds
 
            if (buttonState) {
+            //display.clearDisplay();   //clear display
             tempF = (bme.readTemperature()*1.8)+32;         //converting F to C
             pressPA = bme.readPressure()*0.00030;           //converting pascal pressure to inches of mercury
             humidRH = bme.readHumidity();                   //read humidity
@@ -336,53 +342,56 @@ void loop() {
             Serial.printf("humid %.02f \n", humidRH);       //Serial print humidity
 
             display.setTextSize(1);                                    // Sets 1:1 pixel scale
-            display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);        // Draws black text on white (inverse text)
+            display.setTextColor(SSD1306_WHITE);       // Draws black text on white (inverse text)
             display.setCursor(0,0);                                    // Start at top-left corner
             display.printf("Temp: %.02f%cF  \n Press: %.02f \n RH: %.02f%cF \n", tempF, 248, pressPA, humidRH, 248);   //outputs sensor values
             display.display();
-            delay(2000);                //delays the clear display for 2 seconds
-            display.clearDisplay();   //clear display
+            //delay(2000);                //delays the clear display for 2 seconds
+            //display.clearDisplay();   //clear display
   
              //#Calls the write to datafile and read from file
-              writeToSD(tempF, pressPA, humidRH);    //Calls the writeToSD function and writes these vars to the file
-              delay(2000);  //delays for 2 seconds 
-              readFromSD(); 
-              Serial.printf("Case 0 Button Check %i \n", buttonState); 
+              //writeToSD(tempF, pressPA, humidRH);    //Calls the writeToSD function and writes these vars to the file
+                 /*if(millis() - lastTime > 5000) {
+                  *   writeToSD(tempF, pressPA, humidRH);
+                  *   lastTime = millis();
+                  * }  
+                  * 
+                  */
+              //delay(2000);  //delays for 2 seconds 
+              //readFromSD(); 
+              Serial.printf("Case 3 Button Check %i \n", buttonState); 
               }
                else {
-                  Serial.printf("Case 0 Button Check Else Stat %i \n", buttonState);
-                  pixel.clear(); 
-                  pixel.show();
+                  Serial.printf("Case 3 Button Check Else Stat %i \n", buttonState);
               }
+           
 
-           if (tempF > 50){
-               switchON(wemoPorts);
-               Serial.printf("Single button press \n");
-            }  
-            else{
-                switchOFF(wemoPorts);
-            }                         
+           //if (tempF > 50){
+           //    switchON(wemoPorts);
+           //    Serial.printf("Single button press \n");
+           // }  
+           //else{
+           //     switchOFF(wemoPorts);
+           //}                         
 
-           Serial.printf("You are in Case 3");
+           //Serial.printf("You are in Case 3");
            //Double Click Function
-           if(blinker){
-            pixel.clear();
-            pixel.fill(pink, i, 16);
-            pixel.show();
-           }
-           else {
+           //if(blinker){
+           // pixel.clear();
+           // pixel.fill(pink, i, 16);
+           // pixel.show();
+           //}
+           //else {
             //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
             //display.clearDisplay();      //clears the display 
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire: You are in Case0, Case1, Case2, Case3<, Case4 ");   //Outputs Switch Case
-            display.display();
-            pixel.clear();
-            pixel.show();
-          }
+            //display.setTextColor(SSD1306_WHITE);
+            //display.setCursor(0,0);             // Start at top-left corner
+            //display.printf("Squire: You are in Case0, Case1, Case2, Case3<, Case4 ");   //Outputs Switch Case
+            //display.display();
+            //pixel.clear();
+            //pixel.show();
+          //}
 
-
-          
           Serial.println("Switch Case 3");
         break;
       //Start of Case 4
@@ -543,28 +552,7 @@ void readFromSD(){
   return;  //exits function
 }
 
-//##Void Funtion Blocks for Controlling the Wemo Ports
-void clickWemo() {                                     //when input is received (button is pressed)..
-    buttonState = !buttonState;                     //when button is pressed it changes the bool value of the buttonState
-    Serial.printf("Single button press %i \n", buttonState);        //can do the same thing as  different data types on the same line 
-    if (buttonState) {                                        //asks if the button state is true
-      switchON(wemoPorts);                                    //turns on the wemo pors
-      Serial.printf("Single button press \n");                //Registers that the wemo button was pressed
-    }  
-    else{                                                    //What to look for if this is not true
-      switchOFF(wemoPorts);                                 //Turns off the wemo ports
-    }                         
-} 
-//##Void Function for changing the wemo ports with the DoubleClick One Button action 
-void doubleClickWemo() {                          //looks for what to do if a doubleclick is register
-  blinker = !blinker;                         //Blinker is var used for storing double click information 
-  if (blinker, wemoPorts = i, i++) {         //If  blinker is false, set wemoPorts=i, and incriments I (switches the active wemo port)
-    wemoPorts = i;                           //Sets the current wemo port = to the current i value
-  } 
-  else {                                     //If this is not true
-    wemoPorts = 0;                           //sets the wemoPorts=0
-  }
-}
+
 
 
 //////////////////////////////////////////////
