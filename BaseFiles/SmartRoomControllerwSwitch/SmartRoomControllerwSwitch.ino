@@ -238,10 +238,8 @@ void loop() {
           //display.setCursor(0,0);             // Start at top-left corner
           //display.printf("Switch Case 1");   //Outputs Switch Case
           //display.display();
-          
-          if (buttonState) {
-              encoderOutput = myEnc.read();
-              if (encoderOutput != encoderLastPosition) {
+          encoderOutput = myEnc.read();
+          if (encoderOutput != encoderLastPosition) {
                 Serial.println(encoderOutput);
                 buttonState = false;
                 encoderLastPosition = encoderOutput;
@@ -251,15 +249,14 @@ void loop() {
                   if (encoderOutput < 0) {
                     myEnc.write(0);
                   }
-              }
-              Serial.printf("Encoder Value %i \n", encoderOutput);
-            
-              setHue(encoderOutput,true,HueBlue,255,255);  //lights the bulb the color blue
-              Serial.printf("Case 1 Button Check %i \n", buttonState); 
-          }
+           }
+          if (buttonState) {
+             setHue(encoderOutput,true,HueBlue,255,255);  //lights the bulb the color blue
+              Serial.printf("Case 1 Button Check %i \n", buttonState);    
+          }  
           else {
             Serial.printf("Case 1 Button Check Else Stat %i \n", buttonState);
-            setHue(3,false,HueBlue,0,0);  //lights the bulb the color blue
+            setHue(encoderOutput,false,HueBlue,0,0);  //lights the bulb the color blue
           }
 
           if(blinker){
@@ -275,6 +272,8 @@ void loop() {
             pixel.clear();
             pixel.show();
           }
+
+          Serial.printf("Encoder Value %i \n", encoderOutput);
 
         break;
      //Start of case 2
@@ -373,26 +372,6 @@ void loop() {
                   Serial.printf("Case 3 Button Check Else Stat %i \n", buttonState);
               }
            
-
-           
-
-           //Serial.printf("You are in Case 3");
-           //Double Click Function
-           //if(blinker){
-           // pixel.clear();
-           // pixel.fill(pink, i, 16);
-           // pixel.show();
-           //}
-           //else {
-            //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-            //display.clearDisplay();      //clears the display 
-            //display.setTextColor(SSD1306_WHITE);
-            //display.setCursor(0,0);             // Start at top-left corner
-            //display.printf("Squire: You are in Case0, Case1, Case2, Case3<, Case4 ");   //Outputs Switch Case
-            //display.display();
-            //pixel.clear();
-            //pixel.show();
-          //}
 
           Serial.println("Switch Case 3");
         break;
