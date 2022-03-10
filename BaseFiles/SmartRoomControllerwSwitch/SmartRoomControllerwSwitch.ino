@@ -22,9 +22,12 @@
 #include <SD.h>                        //includes the SD card library
 #include "wemo.h"                      //includes the wemo library
 #include <Adafruit_NeoPixel.h>         //includes the NeoPixel library
+#include <Adafruit_BME280.h>           //Calls library for Adafruit display
 
 //Image Header Files
 #include "kittyHeader.h"               //Includes the kitty image        
+#include "Cat1.h"
+#include "Cat2.h"
 
 //Var for OLED Screen
 const int SCREEN_WIDTH = 128;         //sets the screen width for the OLED
@@ -58,7 +61,7 @@ int object;                   //Creates an int var for saving data from the SD C
 bool status;
 
 //Wemo Vars
-int wemoPorts = 0;  //starts the wemo ports on zero
+int wemoPorts = 1;  //starts the wemo ports on zero
 byte thisbyte; //used to get IP address
 int i;
 
@@ -68,11 +71,13 @@ const int PIXELCOUNT = 16;
 int currentNeoPixel;
 
 //Vars for BME - Temp Sensor 
+Adafruit_BME280 bme;                                                        //Defines BME sensor data 
 int temp;
 int humid;
+float tempF;   //set temperature variable
+float pressPA; //sets pressure var
+float humidRH; //sets RH var
 
-//Journey Var
-char name;
 
 Adafruit_NeoPixel pixel(PIXELCOUNT,PIXELPIN, NEO_GRB + NEO_KHZ800);  //declares the NeoPixel Object
  
@@ -162,16 +167,16 @@ void loop() {
   button1.tick();
   Serial.printf("Button State %i \n", buttonState); 
   encoderOutput = myEnc.read();
-  if (encoderOutput != encoderLastPosition) {
-    Serial.println(encoderOutput);
-    encoderLastPosition = encoderOutput;
-      if (encoderOutput > 255) {
-        myEnc.write(255);
-      }
-      if (encoderOutput < 0) {
-        myEnc.write(0);
-      }
-  }
+//  if (encoderOutput != encoderLastPosition) {
+//    Serial.println(encoderOutput);
+//    encoderLastPosition = encoderOutput;
+//      if (encoderOutput > 255) {
+//        myEnc.write(255);
+//      }
+//      if (encoderOutput < 0) {
+//        myEnc.write(0);
+//      }
+//  }
   
  int potentValue = analogRead(potentPin);   // read potentPin and divide by 255 to give 5 possible readings
  potentMap = map(potentValue, 0, 1023, 0, 5);
@@ -206,9 +211,7 @@ void loop() {
          }
         
           if(blinker){
-            pixel.clear();
-            pixel.fill(red, i, 16);
-            pixel.show();
+            Cat1display();
           }
           else {
            //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
@@ -242,11 +245,11 @@ void loop() {
                   if (encoderOutput < 0) {
                     myEnc.write(0);
                   }
-             }
-             Serial.printf("Encoder Value %i \n", encoderOutput);
+              }
+              Serial.printf("Encoder Value %i \n", encoderOutput);
             
-            setHue(encoderOutput,true,HueBlue,255,255);  //lights the bulb the color blue
-            Serial.printf("Case 1 Button Check %i \n", buttonState); 
+              setHue(encoderOutput,true,HueBlue,255,255);  //lights the bulb the color blue
+              Serial.printf("Case 1 Button Check %i \n", buttonState); 
           }
           else {
             Serial.printf("Case 1 Button Check Else Stat %i \n", buttonState);
@@ -254,9 +257,7 @@ void loop() {
           }
 
           if(blinker){
-            pixel.clear();
-            pixel.fill(yellow, i, 16);
-            pixel.show();
+            catDisplay2();
           }
           else {
             //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
@@ -283,6 +284,19 @@ void loop() {
           display.display();
           //delay(2000);                //delays the clear display for 2 seconds
 
+          if (buttonState) {
+            currentNeoPixel = map(encoderOutput,0,96,0,15);
+            //pixel.setPixelColor(currentNeoPixel,yellow);
+            pixel.fill(blue, i, 16);
+            pixel.show();
+            Serial.printf("Case 2 Button Check %i \n", buttonState); 
+          }
+          else {
+            Serial.printf("Case 2 Button Check Else Stat %i \n", buttonState);
+            pixel.clear(); 
+            pixel.show();
+          }
+          
           if(blinker){
             pixel.clear();
             pixel.fill(green, i, 16);
@@ -306,13 +320,51 @@ void loop() {
       case 3:
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
           //display.clearDisplay();      //clears the display 
-          display.setTextColor(SSD1306_WHITE);
-          display.setCursor(0,0);             // Start at top-left corner
-          display.printf("Switch Case 3");   //Outputs Switch Case
-
-          display.display();
+          //display.setTextColor(SSD1306_WHITE);
+          //display.setCursor(0,0);             // Start at top-left corner
+          //display.printf("Switch Case 3");   //Outputs Switch Case
+          //display.display();
           //delay(2000);                //delays the clear display for 2 seconds
 
+           if (buttonState) {
+            tempF = (bme.readTemperature()*1.8)+32;         //converting F to C
+            pressPA = bme.readPressure()*0.00030;           //converting pascal pressure to inches of mercury
+            humidRH = bme.readHumidity();                   //read humidity
+
+            Serial.printf("temp %.02f \n", tempF);          //Serial.print temp 
+            Serial.printf("pressPA %.02f \n", pressPA);     //serial.print pressure
+            Serial.printf("humid %.02f \n", humidRH);       //Serial print humidity
+
+            display.setTextSize(1);                                    // Sets 1:1 pixel scale
+            display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);        // Draws black text on white (inverse text)
+            display.setCursor(0,0);                                    // Start at top-left corner
+            display.printf("Temp: %.02f%cF  \n Press: %.02f \n RH: %.02f%cF \n", tempF, 248, pressPA, humidRH, 248);   //outputs sensor values
+            display.display();
+            delay(2000);                //delays the clear display for 2 seconds
+            display.clearDisplay();   //clear display
+  
+             //#Calls the write to datafile and read from file
+              writeToSD(tempF, pressPA, humidRH);    //Calls the writeToSD function and writes these vars to the file
+              delay(2000);  //delays for 2 seconds 
+              readFromSD(); 
+              Serial.printf("Case 0 Button Check %i \n", buttonState); 
+              }
+               else {
+                  Serial.printf("Case 0 Button Check Else Stat %i \n", buttonState);
+                  pixel.clear(); 
+                  pixel.show();
+              }
+
+           if (tempF > 50){
+               switchON(wemoPorts);
+               Serial.printf("Single button press \n");
+            }  
+            else{
+                switchOFF(wemoPorts);
+            }                         
+
+           Serial.printf("You are in Case 3");
+           //Double Click Function
            if(blinker){
             pixel.clear();
             pixel.fill(pink, i, 16);
@@ -458,37 +510,37 @@ void printIP() {
   Serial.printf("%i\n",Ethernet.localIP()[3]);  //prints IP to serial monitor
 }
 
-//#Void function for writing to SD Card
-void writeToSD(int object) {                             //Start of function used to write info to card
-  dataFile = SD.open("datalog.csv", FILE_WRITE);         //Opens the datalog.csv for writing to file
+void writeToSD(float tempF, float pressPA, float humidRH ) {     //looks to write these variable to the SD card
+  dataFile = SD.open("datalog.csv", FILE_WRITE);     //file the information was written to
   // if the file is available, write to it:
-  if (dataFile) {                                       //asks if data file is available 
-    dataFile.printf("%i, %i \n", object);                  //Writes the data to the card 
-    dataFile.close();                                   //Closes the data file after the information is written to it
-    Serial.printf("%i, %i \n", object);                 //prints the information stored in the data file to the serial monitor                
+  if (dataFile) {         
+    dataFile.printf("Temp: %.02f%cF  \n Press: %.02f \n RH: %.02f%c \n", tempF, 248, pressPA, humidRH, 248);    //writes these var to the SD card
+    dataFile.close();   //closes the SD when done
+    Serial.printf("Temp: %.02f%cF  \n Press: %.02f \n RH: %.02f%c \n", tempF, 248, pressPA, humidRH, 248);  //prints these values to the screen
   }  
-  else {                                               //Looks for if there were problems reading from the file
-    Serial.printf("error opening datalog.csv \n");     //Prints the error informaion to the serial monitor
+  else {
+    Serial.printf("error opening datalog.csv \n");    //returns this message if information couldn't be read from the card
   }
-  return;                                              //Ends the function
+  return;  //exits function
 } 
 
-//#Void Function to read from SD Card
-void readFromSD(){                                    //start of loop needed to read from the SD card
-    // re-open the file for reading:
-   dataFile = SD.open("datalog.csv");                   //Opens the datalog.csv file and saves that info into the datafile var
-   if (dataFile) {                                      //if this file is availbale
-    Serial.printf("datalog.csv: \n");                  //Prints that information to the Serial monitor   
-    // read from the file until there's nothing else in it:
-    while (dataFile.available()) {                     //While that datafile is avaialble 
-      Serial.write(dataFile.read());                   //continue to read from the file as long as info ia aviable 
-    }
-    dataFile.close();                                  //Closes the datafile after the information is finished being read
+
+//##Start of the read from SD card function
+void readFromSD(){
+  // re-open the file for reading:
+  dataFile = SD.open("datalog.csv"); //opens the datalog.csv file
+  if (dataFile) {
+    Serial.printf("datalog.csv: \n");  //if it was able to open that file it will output those values to the serial monitor
+  // read from the file until there's nothing else in it:
+  while (dataFile.available()) {
+      Serial.write(dataFile.read());   //will continue to read from card as long as data is present
   } 
-  else {                                               //What to look for if there was an error opening the file
-    Serial.printf("error opening datalog.csv \n");     //Prints error to the monitor
+  dataFile.close();   //closes the data file when it is finished reading 
+  } 
+  else { 
+    Serial.printf("error opening datalog.csv \n");   //will output this message if there was a problem reading from the file.
   }
-  return;                                              //Ends the loop
+  return;  //exits function
 }
 
 //##Void Funtion Blocks for Controlling the Wemo Ports
@@ -512,4 +564,28 @@ void doubleClickWemo() {                          //looks for what to do if a do
   else {                                     //If this is not true
     wemoPorts = 0;                           //sets the wemoPorts=0
   }
+}
+
+
+//////////////////////////////////////////////
+/////////////////////////////////////////////
+//Images Block
+void Cat1display(void) {
+  int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
+  int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
+
+  display.clearDisplay();
+  display.drawBitmap(centerH, centerV, Cat1, 128, 64, 1);
+  display.display();
+  delay(2000);
+}
+
+void catDisplay2(void) {
+  int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
+  int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
+
+  display.clearDisplay();
+  display.drawBitmap(centerH, centerV, Cat2, 128, 64, 1);
+  display.display();
+  delay(2000);
 }
