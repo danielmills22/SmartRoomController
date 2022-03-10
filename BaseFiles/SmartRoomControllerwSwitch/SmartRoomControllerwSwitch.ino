@@ -194,6 +194,7 @@ void loop() {
     switch(potentMap)
     {
       case 0:
+           display.clearDisplay();      //clears the display 
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
           //display.setTextColor(SSD1306_WHITE);
           //display.setCursor(0,0);             // Start at top-left corner
@@ -221,9 +222,9 @@ void loop() {
            //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
             //display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
-          display.setCursor(0,0);             // Start at top-left corner
-          display.printf("Squire: You are in Case0<, Case1, Case2, Case3, Case4 ");   //Outputs Switch Case
-          display.display();
+            display.setCursor(0,0);             // Start at top-left corner
+            display.printf("Squire: You are in Case0<, Case1, Case2, Case3, Case4 ");   //Outputs Switch Case
+            display.display();
             pixel.clear();
             pixel.show();
           }
@@ -231,8 +232,8 @@ void loop() {
         //display.clearDisplay();      //clears the display 
         break;
       case 1:
+           display.clearDisplay();      //clears the display 
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          
           //display.setTextColor(SSD1306_WHITE);
           //display.setCursor(0,0);             // Start at top-left corner
           //display.printf("Switch Case 1");   //Outputs Switch Case
@@ -275,13 +276,11 @@ void loop() {
             pixel.show();
           }
 
-          //display.clearDisplay();      //clears the display 
-          //Serial.println("Switch Case 1");
         break;
      //Start of case 2
       case 2:
         //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          
+          display.clearDisplay();      //clears the display 
           display.setTextColor(SSD1306_WHITE);
           display.setCursor(0,0);             // Start at top-left corner
           display.printf("Switch Case 2");   //Outputs Switch Case
@@ -318,11 +317,12 @@ void loop() {
             pixel.show();
           }
           
-          display.clearDisplay();      //clears the display 
+         
           Serial.println("Switch Case 2");
         break;
       //Start of case 3
       case 3:
+          display.clearDisplay();      //clears the display 
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
           //display.clearDisplay();      //clears the display 
           //display.setTextColor(SSD1306_WHITE);
@@ -360,19 +360,21 @@ void loop() {
               //delay(2000);  //delays for 2 seconds 
               //readFromSD(); 
               Serial.printf("Case 3 Button Check %i \n", buttonState); 
+              
+              if (tempF > 50){
+               switchON(1);
+               Serial.printf("Wemo is on \n");
+              }  
+              else{
+                switchOFF(wemoPorts);
+              }                         
               }
                else {
                   Serial.printf("Case 3 Button Check Else Stat %i \n", buttonState);
               }
            
 
-           //if (tempF > 50){
-           //    switchON(wemoPorts);
-           //    Serial.printf("Single button press \n");
-           // }  
-           //else{
-           //     switchOFF(wemoPorts);
-           //}                         
+           
 
            //Serial.printf("You are in Case 3");
            //Double Click Function
@@ -397,7 +399,7 @@ void loop() {
       //Start of Case 4
       case 4:
          //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          
+          display.clearDisplay();      //clears the display 
           display.setTextColor(SSD1306_WHITE);
           display.setCursor(0,0);             // Start at top-left corner
           display.printf("Switch Case 4");   //Outputs Switch Case
@@ -424,7 +426,6 @@ void loop() {
            }
 
 
-          display.clearDisplay();      //clears the display 
           Serial.println("Switch Case 4");
         break;
       //Start of Case 5
