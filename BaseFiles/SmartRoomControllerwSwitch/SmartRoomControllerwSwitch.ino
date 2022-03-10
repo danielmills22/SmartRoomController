@@ -61,7 +61,7 @@ int object;                   //Creates an int var for saving data from the SD C
 bool status;
 
 //Wemo Vars
-int wemoPorts = 1;  //starts the wemo ports on zero
+int wemoPorts = 0;  //starts the wemo ports on zero
 byte thisbyte; //used to get IP address
 int i;
 
@@ -194,7 +194,7 @@ void loop() {
     switch(potentMap)
     {
       case 0:
-           display.clearDisplay();      //clears the display 
+           //display.clearDisplay();      //clears the display 
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
           //display.setTextColor(SSD1306_WHITE);
           //display.setCursor(0,0);             // Start at top-left corner
@@ -219,20 +219,20 @@ void loop() {
             Cat1display();
           }
           else {
-           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-            //display.clearDisplay();      //clears the display 
-            display.setTextColor(SSD1306_WHITE);
+            //display.setCursor(0,0);             // Start at top-left corner
+            //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
+            display.clearDisplay();      //clears the display 
             display.setCursor(0,0);             // Start at top-left corner
+            display.setTextColor(SSD1306_WHITE);
             display.printf("Squire: You are in Case0<, Case1, Case2, Case3, Case4 ");   //Outputs Switch Case
             display.display();
-            pixel.clear();
-            pixel.show();
+            
           }
         
         //display.clearDisplay();      //clears the display 
         break;
       case 1:
-           display.clearDisplay();      //clears the display 
+           //display.clearDisplay();      //clears the display 
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
           //display.setTextColor(SSD1306_WHITE);
           //display.setCursor(0,0);             // Start at top-left corner
@@ -264,13 +264,12 @@ void loop() {
           }
           else {
             //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-            //display.clearDisplay();      //clears the display 
+            display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire: You are in Case0, Case1<, Case2, Case3, Case4 ");   //Outputs Switch Case
+            display.printf("Squire: You are in Case0, Case1<, Case2, Case3, Case4, Case5");   //Outputs Switch Case
             display.display();
-            pixel.clear();
-            pixel.show();
+            
           }
 
           Serial.printf("Encoder Value %i \n", encoderOutput);
@@ -278,14 +277,6 @@ void loop() {
         break;
      //Start of case 2
       case 2:
-        //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          display.clearDisplay();      //clears the display 
-          display.setTextColor(SSD1306_WHITE);
-          display.setCursor(0,0);             // Start at top-left corner
-          display.printf("Switch Case 2");   //Outputs Switch Case
-
-          display.display();
-          //delay(2000);                //delays the clear display for 2 seconds
 
           if (buttonState) {
             currentNeoPixel = map(encoderOutput,0,96,0,15);
@@ -307,13 +298,12 @@ void loop() {
           }
           else {
             //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-            //display.clearDisplay();      //clears the display 
+            display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire: You are in Case0, Case1, Case2<, Case3, Case4 ");   //Outputs Switch Case
+            display.printf("Squire: You are in Case0, Case1, Case2<, Case3, Case4, Case5");   //Outputs Switch Case
             display.display();
-            pixel.clear();
-            pixel.show();
+            
           }
           
          
@@ -322,13 +312,7 @@ void loop() {
       //Start of case 3
       case 3:
           display.clearDisplay();      //clears the display 
-          //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          //display.clearDisplay();      //clears the display 
-          //display.setTextColor(SSD1306_WHITE);
-          //display.setCursor(0,0);             // Start at top-left corner
-          //display.printf("Switch Case 3");   //Outputs Switch Case
-          //display.display();
-          //delay(2000);                //delays the clear display for 2 seconds
+          
 
            if (buttonState) {
             //display.clearDisplay();   //clear display
@@ -349,7 +333,7 @@ void loop() {
             //display.clearDisplay();   //clear display
   
              //#Calls the write to datafile and read from file
-              //writeToSD(tempF, pressPA, humidRH);    //Calls the writeToSD function and writes these vars to the file
+             writeToSD(tempF, pressPA, humidRH);    //Calls the writeToSD function and writes these vars to the file
                  /*if(millis() - lastTime > 5000) {
                   *   writeToSD(tempF, pressPA, humidRH);
                   *   lastTime = millis();
@@ -371,21 +355,28 @@ void loop() {
                else {
                   Serial.printf("Case 3 Button Check Else Stat %i \n", buttonState);
               }
+
+              if(blinker){
+                pixel.clear();
+                pixel.fill(green, i, 16);
+                pixel.show();
+              }
+              else {
+                //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
+                display.clearDisplay();      //clears the display 
+                display.setTextColor(SSD1306_WHITE);
+                display.setCursor(0,0);             // Start at top-left corner
+                display.printf("Squire: You are in Case0, Case1, Case2, Case3<, Case4, Case5");   //Outputs Switch Case
+                display.display();
+               
+            }
            
 
           Serial.println("Switch Case 3");
         break;
       //Start of Case 4
       case 4:
-         //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          display.clearDisplay();      //clears the display 
-          display.setTextColor(SSD1306_WHITE);
-          display.setCursor(0,0);             // Start at top-left corner
-          display.printf("Switch Case 4");   //Outputs Switch Case
-
-          display.display();
-          //delay(2000);                //delays the clear display for 2 seconds
-
+         
            if(blinker){
             pixel.clear();
             pixel.fill(white, i, 16);
@@ -393,15 +384,13 @@ void loop() {
            }
            else {
             //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-            //display.clearDisplay();      //clears the display 
+            display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire: You are in Case0, Case1, Case2, Case3, Case4< ");   //Outputs Switch Case
+            display.printf("Squire: You are in Case0, Case1, Case2, Case3, Case4< ,Case5");   //Outputs Switch Case
             display.display();
-            pixel.clear();
-            pixel.show();
-            pixel.clear();
-            pixel.show();
+            
+            
            }
 
 
@@ -409,15 +398,26 @@ void loop() {
         break;
       //Start of Case 5
       case 5:
-         //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-          display.clearDisplay();      //clears the display 
-          display.setTextColor(SSD1306_WHITE);
-          display.setCursor(0,0);             // Start at top-left corner
-          display.printf("Switch Case 4");   //Outputs Switch Case
+         
+          if (buttonState) {
+            setHue(1,true,random(0,60000),255,255);  //lights the bulb the color random
+            setHue(2,true,random(0,60000),255,255);  //lights the bulb the color random
+            setHue(3,true,random(0,60000),255,255);  //lights the bulb the color random
+            setHue(4,true,random(0,60000),255,255);  //lights the bulb the color random
+            setHue(5,true,random(0,60000),255,255);  //lights the bulb the color random
+            Serial.printf("Case 5 Button Check %i \n", buttonState);    
+          }  
+          else {
+            Serial.printf("Case 1 Button Check Else Stat %i \n", buttonState);
+            setHue(1,false,random(0,60000),0,0);  //lights the bulb the color random
+            setHue(2,false,random(0,60000),0,0);  //lights the bulb the color random
+            setHue(3,false,random(0,60000),0,0);  //lights the bulb the color random
+            setHue(4,false,random(0,60000),0,0);  //lights the bulb the color random
+            setHue(5,false,random(0,60000),0,0);  //lights the bulb the color random
+            Serial.printf("Case 5 Button Check %i \n", buttonState);    
+          }
 
-          display.display();
-          //delay(2000);                //delays the clear display for 2 seconds
-
+           
            if(blinker){
             pixel.clear();
             pixel.fill(yellow, i, 16);
@@ -425,18 +425,17 @@ void loop() {
            }
            else {
             //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-  
+            display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
             display.printf("Squire: You are in Case0, Case1, Case2, Case3, Case4, Case5< ");   //Outputs Switch Case
             display.display();
-            pixel.clear();
-            pixel.show();
+           
            }
 
 
           
-          Serial.println("Switch Case 4");
+          Serial.println("Switch Case 5");
         break;
       //Start of default
       default:
