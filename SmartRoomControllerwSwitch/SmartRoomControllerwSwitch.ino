@@ -315,12 +315,14 @@ void loop() {
             writeToSD(tempF, pressPA, humidRH);    //Calls the writeToSD function and writes these vars to the file
             Serial.printf("Case 3 Button Check %i \n", buttonState); 
               
-            if (tempF > 80){
+            if (tempF > 70){
                 switchON(1);
+                switchON(3);
                 Serial.printf("Wemo is on \n");
             }  
             else{
-                switchOFF(wemoPorts);
+                switchOFF(1);
+                switchOFF(3);
             }                         
             }
             else {
