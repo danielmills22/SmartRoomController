@@ -24,10 +24,13 @@
 #include <Adafruit_NeoPixel.h>         //includes the NeoPixel library
 #include <Adafruit_BME280.h>           //Calls library for Adafruit display
 
-//Image Header Files
+//Image Header Files - For doubleClick in Switch Cases
 #include "kittyHeader.h"               //Includes the kitty image        
 #include "Cat1.h"
 #include "Cat2.h"
+#include "Cat3.h"
+#include "cat4.h"
+#include "cat5.h"
 
 //Var for OLED Screen
 const int SCREEN_WIDTH = 128;         //sets the screen width for the OLED
@@ -91,7 +94,7 @@ void setup() {
   Serial.begin(9600);                  //Checks serial monitor
   button1.attachClick(click1);           //initialized button1 click1
   button1.attachDoubleClick(doubleClick1);
-  button1.setClickTicks(250);
+  button1.setClickTicks(700);
   button1.setPressTicks(2000);
   buttonState = false;
   blinker = false;
@@ -129,7 +132,7 @@ void setup() {
   status = SD.begin(chipSelect);
   if (!status) {  // if status is false
     Serial.printf("Card failed, or not present\n");
-    while(true);  // pause the code indefinately
+  //  while(true);  // pause the code indefinately
   }
   else {
     Serial.printf("card initialized.\n");
@@ -181,7 +184,7 @@ void loop() {
 //  }
   
  int potentValue = analogRead(potentPin);   // read potentPin and divide by 255 to give 5 possible readings
- potentMap = map(potentValue, 0, 1023, 0, 5);
+ potentMap = map(potentValue, 0, 1023, 0, 4);
  //Serial.printf("Potent Map %i \n, Potent Values %i \n", potentMap, potentValue);
  Serial.printf("Potent Map %i \n", potentMap);
   //sp
@@ -203,7 +206,7 @@ void loop() {
          
          
          if (buttonState) {
-            currentNeoPixel = map(encoderOutput,0,96,0,15);
+            //currentNeoPixel = map(encoderOutput,0,96,0,15);
             //pixel.setPixelColor(currentNeoPixel,yellow);
             pixel.fill(blue, i, 16);
             pixel.show();
@@ -224,7 +227,7 @@ void loop() {
             display.clearDisplay();      //clears the display 
             display.setCursor(0,0);             // Start at top-left corner
             display.setTextColor(SSD1306_WHITE);
-            display.printf("Squire: You are in Case0<, Case1, Case2, Case3, Case4 ");   //Outputs Switch Case
+            display.printf("Squire, you are in: \n Case0< \n Case1 \n Case2 \n Case3 \n Case4");   //Outputs Switch Case
             display.display();
             
           }
@@ -267,7 +270,7 @@ void loop() {
             display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire: You are in Case0, Case1<, Case2, Case3, Case4, Case5");   //Outputs Switch Case
+            display.printf("Squire you are in: \n Case0 \n Case1< \n Case2 \n Case3 \n Case4");   //Outputs Switch Case
             display.display();
             
           }
@@ -292,16 +295,14 @@ void loop() {
           }
           
           if(blinker){
-            pixel.clear();
-            pixel.fill(green, i, 16);
-            pixel.show();
+            catDisplay3();
           }
           else {
             //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
             display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire: You are in Case0, Case1, Case2<, Case3, Case4, Case5");   //Outputs Switch Case
+            display.printf("Squire you are in: \n Case0 \n Case1 \n Case2< \n Case3 \n Case4");   //Outputs Switch Case
             display.display();
             
           }
@@ -357,18 +358,15 @@ void loop() {
               }
 
               if(blinker){
-                pixel.clear();
-                pixel.fill(green, i, 16);
-                pixel.show();
+               catDisplay4();
               }
               else {
                 //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
                 display.clearDisplay();      //clears the display 
                 display.setTextColor(SSD1306_WHITE);
                 display.setCursor(0,0);             // Start at top-left corner
-                display.printf("Squire: You are in Case0, Case1, Case2, Case3<, Case4, Case5");   //Outputs Switch Case
-                display.display();
-               
+                display.printf("Squire, you are in: \n Case0 \n Case1 \n Case2 \n Case3< \n Case4");   //Outputs Switch Case
+                display.display(); 
             }
            
 
@@ -376,36 +374,14 @@ void loop() {
         break;
       //Start of Case 4
       case 4:
-         
-           if(blinker){
-            pixel.clear();
-            pixel.fill(white, i, 16);
-            pixel.show();
-           }
-           else {
-            //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
-            display.clearDisplay();      //clears the display 
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire: You are in Case0, Case1, Case2, Case3, Case4< ,Case5");   //Outputs Switch Case
-            display.display();
-            
-            
-           }
 
-
-          Serial.println("Switch Case 4");
-        break;
-      //Start of Case 5
-      case 5:
-         
           if (buttonState) {
             setHue(1,true,random(0,60000),255,255);  //lights the bulb the color random
             setHue(2,true,random(0,60000),255,255);  //lights the bulb the color random
             setHue(3,true,random(0,60000),255,255);  //lights the bulb the color random
             setHue(4,true,random(0,60000),255,255);  //lights the bulb the color random
             setHue(5,true,random(0,60000),255,255);  //lights the bulb the color random
-            Serial.printf("Case 5 Button Check %i \n", buttonState);    
+            Serial.printf("Case 4 Button Check %i \n", buttonState);    
           }  
           else {
             Serial.printf("Case 1 Button Check Else Stat %i \n", buttonState);
@@ -414,30 +390,24 @@ void loop() {
             setHue(3,false,random(0,60000),0,0);  //lights the bulb the color random
             setHue(4,false,random(0,60000),0,0);  //lights the bulb the color random
             setHue(5,false,random(0,60000),0,0);  //lights the bulb the color random
-            Serial.printf("Case 5 Button Check %i \n", buttonState);    
+            Serial.printf("Case 4 Button Check %i \n", buttonState);    
           }
-
            
            if(blinker){
-            pixel.clear();
-            pixel.fill(yellow, i, 16);
-            pixel.show();
+            catDisplay5();
            }
            else {
             //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
             display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire: You are in Case0, Case1, Case2, Case3, Case4, Case5< ");   //Outputs Switch Case
+            display.printf("Squire, you are in: \n Case0 \n Case1 \n Case2 \n Case3 \n Case4<");   //Outputs Switch Case
             display.display();
-           
            }
 
 
-          
-          Serial.println("Switch Case 5");
+          Serial.println("Switch Case 4");
         break;
-      //Start of default
       default:
           //display.setTextSize(1);                                // Draw 2X-scale text (too large for screen)
           display.clearDisplay();      //clears the display 
@@ -458,15 +428,7 @@ void loop() {
 
 /////////////////////////////////////////////
 ////////////////////////////////////////////
-//void drawbitmapCase1(void) {
-//  int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
-//  int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
-//
-//  display.clearDisplay();
-//  display.drawBitmap(centerH, centerV, Kitty, 128, 64, 1);
-//  display.display();
-//  delay(2000);
-//}
+//Void Functions block
 
 //Creates the void functions for OneButton
 void click1() {                                     //when input is received (button is pressed)..
@@ -478,17 +440,6 @@ void doubleClick1() {    //looks for the doubleclick function
   Serial.printf("Double button press \n");  //outputs that a doublepress occured to the screen
 }
 
-//Void Function for showing Images
-//void drawbitmap(void) {
-//  int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
-//  int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
-//
-//  display.clearDisplay();
-//  display.drawBitmap(centerH, centerV, Kitty, 128, 64, 1);
-//  display.display();
-//  delay(2000);
-//}
- 
 //#Void Function for Starting of the printIP function
 void printIP() {
   Serial.printf("My IP address: ");   //outputs this to the screen if the connection was successful
@@ -540,19 +491,44 @@ void readFromSD(){
 void Cat1display(void) {
   int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
   int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
-
   display.clearDisplay();
   display.drawBitmap(centerH, centerV, Cat1, 128, 64, 1);
   display.display();
-  delay(2000);
+  //delay(2000);
 }
 
 void catDisplay2(void) {
   int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
   int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
-
   display.clearDisplay();
   display.drawBitmap(centerH, centerV, Cat2, 128, 64, 1);
   display.display();
-  delay(2000);
+  //delay(2000);
+}
+
+void catDisplay3(void) {
+  int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
+  int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
+  display.clearDisplay();
+  display.drawBitmap(centerH, centerV, Cat3, 128, 64, 1);
+  display.display();
+  //delay(2000);
+}
+
+void catDisplay4(void) {
+  int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
+  int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
+  display.clearDisplay();
+  display.drawBitmap(centerH, centerV, Cat4, 128, 64, 1);
+  display.display();
+  //delay(2000);
+}
+
+void catDisplay5(void) {
+  int centerV =  (display.height()-64)/2;   //(display.height()-128)/2;
+  int centerH =  (display.width()-128)/2;     //(display.width()-64)/2;
+  display.clearDisplay();
+  display.drawBitmap(centerH, centerV, Cat5, 128, 64, 1);
+  display.display();
+  //delay(2000);
 }
