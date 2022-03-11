@@ -173,7 +173,7 @@ void loop() {
  potentMap = map(potentValue, 0, 1023, 0, 4);
  //Serial.printf("Potent Map %i \n, Potent Values %i \n", potentMap, potentValue);
  Serial.printf("Potent Map %i \n", potentMap);
-  //sp
+  //sp-Space or serial.print output testin
   if(potentMap != lastPotentValue){  //Start of Switch loop
     buttonState = false;
     blinker = false;
@@ -183,6 +183,8 @@ void loop() {
     switch(potentMap)
     {
       case 0:
+          
+         
          if (buttonState) {
             pixel.fill(blue, i, 16);
             pixel.show();
@@ -202,7 +204,7 @@ void loop() {
             display.clearDisplay();      //clears the display 
             display.setCursor(0,0);             // Start at top-left corner
             display.setTextColor(SSD1306_WHITE);
-            display.printf("Squire, you are in: \n Case0< \n Case1 \n Case2 \n Case3 \n Case4");   //Outputs Switch Case
+            display.printf("Squire, you are in: \n Case0-NeoPixels < \n Case1 \n Case2 \n Case3 \n Case4 \n ");   //Outputs Switch Case
             display.display(); 
           }
         
@@ -215,6 +217,11 @@ void loop() {
                 encoderLastPosition = encoderOutput;
                   if (encoderOutput > 4) {
                     myEnc.write(4);
+                    display.clearDisplay();      //clears the display 
+                    display.setTextColor(SSD1306_WHITE);
+                    display.setCursor(0,0);             // Start at top-left corner
+                    display.printf("Encoder %i, ", encoderOutput);   //Outputs Switch Case
+                    display.display();
                   }
                   if (encoderOutput < 0) {
                     myEnc.write(0);
@@ -237,7 +244,7 @@ void loop() {
             display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire you are in: \n Case0 \n Case1< \n Case2 \n Case3 \n Case4");   //Outputs Switch Case
+            display.printf("Squire you are in: \n Case0 \n Case1-HueLights < \n Case2 \n Case3 \n Case4 ");   //Outputs Switch Case
             display.display();
             
           }
@@ -247,18 +254,26 @@ void loop() {
         break;
      //Start of case 2
       case 2:
-          if (buttonState) {
-            currentNeoPixel = map(encoderOutput,0,96,0,15);
-            //pixel.setPixelColor(currentNeoPixel,yellow);
-            pixel.fill(blue, i, 16);
-            pixel.show();
-            Serial.printf("Case 2 Button Check %i \n", buttonState); 
-          }
-          else {
-            Serial.printf("Case 2 Button Check Else Stat %i \n", buttonState);
-            pixel.clear(); 
-            pixel.show();
-          }
+            encoderOutput = myEnc.read();
+            if (encoderOutput != encoderLastPosition) {
+                Serial.println(encoderOutput);
+                buttonState = false;
+                encoderLastPosition = encoderOutput;
+                  if (encoderOutput > 5) {
+                    myEnc.write(4);
+                  }
+                  if (encoderOutput < 0) {
+                    myEnc.write(0);
+                  }
+            }
+          
+            if (buttonState){
+                switchON(encoderOutput);
+                Serial.printf("Wemo is on \n");
+            }  
+            else{
+                switchOFF(encoderOutput);
+            }
           
           if(blinker){
             catDisplay3();
@@ -268,10 +283,12 @@ void loop() {
             display.clearDisplay();      //clears the display 
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire you are in: \n Case0 \n Case1 \n Case2< \n Case3 \n Case4");   //Outputs Switch Case
+            display.printf("Squire you are in: \n Case0 \n Case1 \n Case2-Wemo< \n Case3 \n Case4 ");   //Outputs Switch Case
             display.display();
+
+            }
+
             
-          }
           
          
           Serial.println("Switch Case 2");
@@ -298,7 +315,7 @@ void loop() {
             writeToSD(tempF, pressPA, humidRH);    //Calls the writeToSD function and writes these vars to the file
             Serial.printf("Case 3 Button Check %i \n", buttonState); 
               
-            if (tempF > 50){
+            if (tempF > 80){
                 switchON(1);
                 Serial.printf("Wemo is on \n");
             }  
@@ -318,7 +335,7 @@ void loop() {
                 display.clearDisplay();             //clears the display
                 display.setTextColor(SSD1306_WHITE); //sets the display color to white
                 display.setCursor(0,0);             // Start at top-left corner
-                display.printf("Squire, you are in: \n Case0 \n Case1 \n Case2 \n Case3< \n Case4");   //Outputs Switch Case
+                display.printf("Squire, you are in: \n Case0 \n Case1 \n Case2 \n Case3-FanandTemp < \n Case4 \n ");   //Outputs Switch Case
                 display.display();   //shows the display
             }
            
@@ -353,7 +370,7 @@ void loop() {
             display.clearDisplay();             //clears the display
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);             // Start at top-left corner
-            display.printf("Squire, you are in: \n Case0 \n Case1 \n Case2 \n Case3 \n Case4<");   //Outputs Switch Case
+            display.printf("Squire, you are in: \n Case0 \n Case1 \n Case2 \n Case3 \n Case4-HueLightsRandom< \n ");   //Outputs Switch Case
             display.display();
            }
 
