@@ -57,7 +57,7 @@ int iButton = 0;                //Creates var to hold the button press outcome
 File dataFile;
 //Creates the vars for the SD Card
 const int chipSelect = 4;     //Registers the SD card to pin 4
-int object;                   //Creates an int var for saving data from the SD Card
+//int object;                   //Creates an int var for saving data from the SD Card
 bool status;
 
 //Wemo Vars
@@ -129,7 +129,7 @@ void setup() {
   status = SD.begin(chipSelect);
   if (!status) {  // if status is false
     Serial.printf("Card failed, or not present\n");
-//    while(true);  // pause the code indefinately
+    while(true);  // pause the code indefinately
   }
   else {
     Serial.printf("card initialized.\n");
